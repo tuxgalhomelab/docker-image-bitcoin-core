@@ -78,11 +78,17 @@ RUN \
     && ln -sf /opt/bitcoin/bin/bitcoin-tx /opt/bin/bitcoin-tx \
     && ln -sf /opt/bitcoin/bin/bitcoin-util /opt/bin/bitcoin-util \
     && ln -sf /opt/bitcoin/bin/bitcoin-wallet /opt/bin/bitcoin-wallet \
+    # Set up the data dir. \
+    && mkdir -p /data/bitcoind \
+    && mkdir -p /home/${USER_NAME:?}/.bitcoin \
+    && echo "datadir=/data/bitcoind" > /home/${USER_NAME:?}/.bitcoin/bitcoin.conf \
+    && chown -R ${USER_NAME:?}:${GROUP_NAME:?} /data/bitcoind /home/${USER_NAME:?}/.bitcoin \
     # Copy the start-botcoind.sh script. \
     && cp /scripts/start-bitcoind.sh /opt/bitcoin/bin \
     && ln -sf /opt/bitcoin/bin/start-bitcoind.sh /opt/bin/start-bitcoind \
     # Clean up. \
     && rm -rf /root/.gnupg \
+    && rm -rf /build \
     && homelab remove gpg \
     && homelab cleanup
 
