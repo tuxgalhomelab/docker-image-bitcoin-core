@@ -48,24 +48,24 @@ RUN \
         --location \
         --remote-name \
         --output-dir /build \
-        https://bitcoin.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/bitcoin-${BITCOIN_CORE_VERSION:?}-x86_64-linux-gnu.tar.gz \
+        "https://bitcoin.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/bitcoin-${BITCOIN_CORE_VERSION:?}-$(arch)-linux-gnu.tar.gz" \
     && curl \
         --silent \
         --location \
         --remote-name \
         --output-dir /build \
-        https://bitcoin.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/SHA256SUMS.asc \
+        "https://bitcoin.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/SHA256SUMS.asc" \
     && curl \
         --silent \
         --location \
         --remote-name \
         --output-dir /build \
-        https://bitcoin.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/SHA256SUMS \
+        "https://bitcoin.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/SHA256SUMS" \
     && gpg --verify /build/SHA256SUMS.asc \
     # Install the release. \
     && homelab install-tar-dist \
-        file:///build/bitcoin-${BITCOIN_CORE_VERSION:?}-x86_64-linux-gnu.tar.gz \
-        "$(grep "bitcoin-${BITCOIN_CORE_VERSION:?}-x86_64-linux-gnu.tar.gz" /build/SHA256SUMS | cut -d ' ' -f 1)" \
+        "file:///build/bitcoin-${BITCOIN_CORE_VERSION:?}-$(arch)-linux-gnu.tar.gz" \
+        "$(grep "bitcoin-${BITCOIN_CORE_VERSION:?}-$(arch)-linux-gnu.tar.gz" /build/SHA256SUMS | cut -d ' ' -f 1)" \
         bitcoin \
         bitcoin-${BITCOIN_CORE_VERSION:?} \
         ${USER_NAME:?} \
