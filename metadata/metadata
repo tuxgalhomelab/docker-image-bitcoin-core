@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+set -e -o pipefail
+
+# Add repo specific metadata here.
+
+BASE_IMAGE_CONFIG_KEY_PREFIX="BASE_IMAGE"
+
+RELEASE_PACKAGE_NAME="Bitcoin Core"
+RELEASE_TAG_PACKAGE_NAME="bitcoin-core"
+
+UPSTREAM_PACKAGE_NAME="Bitcoin Core"
+UPSTREAM_VERSION_CONFIG_KEY="BITCOIN_CORE_VERSION"
+UPSTREAM_RELEASES_PAGE="https://bitcoincore.org/en/releases/"
+UPSTREAM_RELEASES_SIGNING_KEYS_URI="https://api.github.com/repos/bitcoin-core/guix.sigs/contents/builder-keys"
+SIGNING_KEYS_FILE="${repo_dir:?}/config/signing-keys"
+
+TEST_TYPE="background"
+TEST_CONTAINER_TYPE="bitcoin-core"
+TEST_CONTAINER_START_WAIT_SECONDS="10"
+
+current_upstream_version() {
+    get_config_arg ${UPSTREAM_VERSION_CONFIG_KEY:?}
+}
+
+latest_upstream_version() {
+    curl --silent --location "${UPSTREAM_RELEASES_PAGE:?}" | \
+        grep -i -P 'a href="/en/releases/[^\s]+"' | \
+        sed -E 's@^.+a href="/en/releases/(.+)/".+$@\1@g' | \
+        sort --version-sort --reverse | \
+        head -1
+}
+
+list_signing_key_uris() {
+    curl -s "${UPSTREAM_RELEASES_SIGNING_KEYS_URI:?}" | jq -r '.[].download_url'
+}
+
+get_signing_keys() {
+    # Individual URIs of each signing key to be imported
+    for pub_key_uri in $(list_signing_key_uris); do
+        gpg \
+            --with-colons \
+            --import-options \
+            show-only \
+            --import \
+            --dry-run \
+            <(curl --silent --location ${pub_key_uri:?}) 2>/dev/null | \
+            sed -E -n 's/^fpr:::::::::([0-9A-F]{40}):$/\1/p' | \
+            head -1
+    done
+}
+
+get_sorted_signing_keys() {
+    get_signing_keys | sort
+}
+
+update_latest_upstream_version() {
+    local cur_ver="${1:?}"
+    local latest_ver="${2:?}"
+    echo "Updating ${UPSTREAM_PACKAGE_NAME:?} ${UPSTREAM_VERSION_CONFIG_KEY:?} '${cur_ver:?}' -> '${latest_ver:?}'"
+    set_config_arg "${UPSTREAM_VERSION_CONFIG_KEY:?}" "${latest_ver:?}"
+    git add ${ARGS_FILE:?}
+
+    echo "Updating signing-keys"
+    get_sorted_signing_keys > "${SIGNING_KEYS_FILE:?}"
+    git add "${SIGNING_KEYS_FILE:?}"
+}
+
+package_current_release_version() {
+    current_upstream_version
+}
+
+test_start_container() {
+    local container_name="${1:?}"
+    docker run \
+        --name ${container_name:?} \
+        --detach \
+        --rm \
+        ${IMAGE:?}
+}
+
+test_image_after_container_startup() {
+    local container_name="${1:?}"
+    set +e
+    local cmd_output=$(\
+        docker exec \
+        ${container_name:?} \
+        bitcoin-cli \
+        -regtest \
+        getblockchaininfo | \
+        jq '.chain')
+    local return_code=$?
+    set -e
+
+    if [[ ${return_code:?} != "0" ]]; then
+        echo "Test failed: Obtained non-zero return code"
+        echo "Output: ${cmd_output:?}"
+        echo "Return Code: ${return_code:?}"
+        test_cleanup_container ${container_name:?}
+        exit 1
+    fi
+    if [[ "${cmd_output:?}" != '"regtest"' ]]; then
+        echo "Test failed: Expected and actual outputs do not match"
+        echo "Expected Output: \"regtest\""
+        echo "Actual Output  : ${cmd_output:?}"
+        test_cleanup_container ${container_name:?}
+        exit 1
+    fi
+}
