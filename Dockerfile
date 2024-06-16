@@ -21,7 +21,7 @@ ARG BITCOIN_CORE_VERSION
 RUN \
     --mount=type=bind,target=/scripts,from=with-keys-and-scripts,source=/scripts \
     --mount=type=bind,target=/keys,from=with-keys-and-scripts,source=/keys \
-    set -e -o pipefail \
+    set -E -e -o pipefail \
     # Install dependencies. \
     && homelab install gnupg \
     # Create the user and the group. \
