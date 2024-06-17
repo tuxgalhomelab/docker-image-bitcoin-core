@@ -23,7 +23,7 @@ current_upstream_version() {
 }
 
 latest_upstream_version() {
-    curl --silent --location "${UPSTREAM_RELEASES_PAGE:?}" | \
+    curl --silent --fail --location "${UPSTREAM_RELEASES_PAGE:?}" | \
         grep -i -P 'a href="/en/releases/[^\s]+"' | \
         sed -E 's@^.+a href="/en/releases/(.+)/".+$@\1@g' | \
         sort --version-sort --reverse | \
@@ -31,7 +31,7 @@ latest_upstream_version() {
 }
 
 list_signing_key_uris() {
-    curl -s "${UPSTREAM_RELEASES_SIGNING_KEYS_URI:?}" | jq -r '.[].download_url'
+    curl --silent --fail --location "${UPSTREAM_RELEASES_SIGNING_KEYS_URI:?}" | jq -r '.[].download_url'
 }
 
 get_signing_keys() {
@@ -43,7 +43,7 @@ get_signing_keys() {
             show-only \
             --import \
             --dry-run \
-            <(curl --silent --location ${pub_key_uri:?}) 2>/dev/null | \
+            <(curl --silent --fail --location ${pub_key_uri:?}) 2>/dev/null | \
             sed -E -n 's/^fpr:::::::::([0-9A-F]{40}):$/\1/p' | \
             head -1
     done

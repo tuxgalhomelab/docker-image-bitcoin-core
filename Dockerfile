@@ -45,18 +45,21 @@ RUN \
     && mkdir -p /build \
     && curl \
         --silent \
+        --fail \
         --location \
         --remote-name \
         --output-dir /build \
         "https://bitcoin.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/bitcoin-${BITCOIN_CORE_VERSION:?}-$(arch)-linux-gnu.tar.gz" \
     && curl \
         --silent \
+        --fail \
         --location \
         --remote-name \
         --output-dir /build \
         "https://bitcoin.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/SHA256SUMS.asc" \
     && curl \
         --silent \
+        --fail \
         --location \
         --remote-name \
         --output-dir /build \
