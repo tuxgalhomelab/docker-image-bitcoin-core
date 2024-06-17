@@ -43,7 +43,7 @@ get_signing_keys() {
             show-only \
             --import \
             --dry-run \
-            <(curl --silent --fail --location ${pub_key_uri:?}) 2>/dev/null | \
+            <(curl --silent --fail --location ${pub_key_uri:?}) | \
             sed -E -n 's/^fpr:::::::::([0-9A-F]{40}):$/\1/p' | \
             head -1
     done
