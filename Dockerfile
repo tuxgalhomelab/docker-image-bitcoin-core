@@ -37,9 +37,8 @@ RUN \
             echo "Importing key ${key:?}"; \
             gpg --batch --keyserver hkp://keyserver.ubuntu.com --recv-keys ${key:?} || \
             gpg --batch --keyserver hkp://keyserver.ubuntu.com --recv-keys ${key:?} || \
-            gpg --batch --keyserver hkp://keyserver.ubuntu.com --recv-keys ${key:?} || \
-            gpg --batch --keyserver hkp://keyserver.ubuntu.com --recv-keys ${key:?} || \
-            gpg --batch --keyserver hkp://keyserver.ubuntu.com --recv-keys ${key:?} \
+            gpg --batch --keyserver hkp://keys.openpgp.org --recv-keys ${key:?} || \
+            gpg --batch --keyserver hkp://keys.openpgp.org --recv-keys ${key:?} \
             ; \
         done \
     # Download and verify the release. \
