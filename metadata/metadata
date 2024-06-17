@@ -35,6 +35,8 @@ list_signing_key_uris() {
 }
 
 get_signing_keys() {
+    mkdir -p $HOME/.gnupg
+
     # Individual URIs of each signing key to be imported
     for pub_key_uri in $(list_signing_key_uris); do
         gpg \
