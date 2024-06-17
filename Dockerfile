@@ -34,6 +34,7 @@ RUN \
     # Import the gpg public keys used for signing the bitcoin core releases. \
     # We attempt five times to handle any transient errors. \
     && for key in $(cat /keys/signing-keys); do \
+            echo "Importing key ${key:?}"; \
             gpg --batch --keyserver hkp://keyserver.ubuntu.com --recv-keys ${key:?} || \
             gpg --batch --keyserver hkp://keyserver.ubuntu.com --recv-keys ${key:?} || \
             gpg --batch --keyserver hkp://keyserver.ubuntu.com --recv-keys ${key:?} || \
