@@ -97,4 +97,6 @@ RUN \
 
 USER ${USER_NAME}:${GROUP_NAME}
 WORKDIR /home/${USER_NAME}
+
 CMD ["start-bitcoind"]
+STOPSIGNAL SIGTERM
