@@ -49,6 +49,7 @@ RUN \
         --silent \
         --fail \
         --location \
+        --show-error \
         --remote-name \
         --output-dir /build \
         "https://bitcoincore.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/bitcoin-${BITCOIN_CORE_VERSION:?}-$(arch)-linux-gnu.tar.gz" \
@@ -56,6 +57,7 @@ RUN \
         --silent \
         --fail \
         --location \
+        --show-error \
         --remote-name \
         --output-dir /build \
         "https://bitcoincore.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/SHA256SUMS.asc" \
@@ -63,6 +65,7 @@ RUN \
         --silent \
         --fail \
         --location \
+        --show-error \
         --remote-name \
         --output-dir /build \
         "https://bitcoincore.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/SHA256SUMS" \
