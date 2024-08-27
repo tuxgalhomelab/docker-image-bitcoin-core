@@ -46,30 +46,15 @@ RUN \
         done \
     # Download and verify the release. \
     && mkdir -p /build \
-    && curl \
-        --silent \
-        --fail \
-        --location \
-        --show-error \
-        --remote-name \
-        --output-dir /build \
+    && homelab download-file-to \
         "https://bitcoincore.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/bitcoin-${BITCOIN_CORE_VERSION:?}-$(arch)-linux-gnu.tar.gz" \
-    && curl \
-        --silent \
-        --fail \
-        --location \
-        --show-error \
-        --remote-name \
-        --output-dir /build \
+        /build \
+    && homelab download-file-to \
         "https://bitcoincore.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/SHA256SUMS.asc" \
-    && curl \
-        --silent \
-        --fail \
-        --location \
-        --show-error \
-        --remote-name \
-        --output-dir /build \
+        /build \
+    && homelab download-file-to \
         "https://bitcoincore.org/bin/bitcoin-core-${BITCOIN_CORE_VERSION:?}/SHA256SUMS" \
+        /build \
     && gpg --verbose --verify /build/SHA256SUMS.asc \
     # Install the release. \
     && homelab install-tar-dist \
