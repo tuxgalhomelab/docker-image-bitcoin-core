@@ -17,7 +17,7 @@ ARG USER_ID
 ARG GROUP_ID
 ARG BITCOIN_CORE_VERSION
 
-# hadolint ignore=DL4006,SC2086
+# hadolint ignore=DL4006,SC2086,SC3009
 RUN \
     --mount=type=bind,target=/scripts,from=with-keys-and-scripts,source=/scripts \
     --mount=type=bind,target=/keys,from=with-keys-and-scripts,source=/keys \
