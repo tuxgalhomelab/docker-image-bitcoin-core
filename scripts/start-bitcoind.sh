@@ -25,6 +25,7 @@ logips=1
 loglevelalways=1
 logsourcelocations=0
 logthreadnames=1
+logtimestamp=1
 printtoconsole=1
 
 server=1
@@ -33,6 +34,7 @@ listen=0
 listenonion=0
 noonion=1
 upnp=0
+onlynet=ipv4
 
 i2pacceptincoming=0
 
