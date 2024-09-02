@@ -6,6 +6,7 @@ FROM ${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG} AS with-keys-and-scripts
 
 COPY config/signing-keys /keys/
 COPY scripts/start-bitcoind.sh /scripts/
+COPY scripts/bitcoind-info.sh /scripts/
 
 ARG BASE_IMAGE_NAME
 ARG BASE_IMAGE_TAG
@@ -16,6 +17,7 @@ ARG GROUP_NAME
 ARG USER_ID
 ARG GROUP_ID
 ARG BITCOIN_CORE_VERSION
+ARG PACKAGES_TO_INSTALL
 
 # hadolint ignore=DL4006,SC2086,SC3009
 RUN \
@@ -25,6 +27,7 @@ RUN \
     && export HOMELAB_VERBOSE=y \
     # Install dependencies. \
     && homelab install gnupg \
+    && homelab install ${PACKAGES_TO_INSTALL:?} \
     # Create the user and the group. \
     && homelab add-user \
         ${USER_NAME:?} \
@@ -75,14 +78,19 @@ RUN \
     && mkdir -p /home/${USER_NAME:?}/.bitcoin \
     && echo "datadir=/data/bitcoind/data" > /home/${USER_NAME:?}/.bitcoin/bitcoin.conf \
     && chown -R ${USER_NAME:?}:${GROUP_NAME:?} /data/bitcoind /home/${USER_NAME:?}/.bitcoin \
-    # Copy the start-botcoind.sh script. \
-    && cp /scripts/start-bitcoind.sh /opt/bitcoin/bin \
+    # Copy the start-botcoind.sh and bitcoind-info scripts. \
+    && cp /scripts/{start-bitcoind,bitcoind-info}.sh /opt/bitcoin/bin \
     && ln -sf /opt/bitcoin/bin/start-bitcoind.sh /opt/bin/start-bitcoind \
+    && ln -sf /opt/bitcoin/bin/bitcoind-info.sh /opt/bin/bitcoind-info \
     # Clean up. \
     && rm -rf /root/.gnupg \
     && rm -rf /build \
     && homelab remove gpg \
     && homelab cleanup
+
+HEALTHCHECK \
+    --start-period=15s --interval=30s --timeout=3s \
+    CMD bitcoind-info
 
 USER ${USER_NAME}:${GROUP_NAME}
 WORKDIR /home/${USER_NAME}

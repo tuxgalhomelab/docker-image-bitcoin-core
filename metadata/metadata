@@ -107,4 +107,6 @@ test_image_after_container_startup() {
         test_cleanup_container ${container_name:?}
         exit 1
     fi
+
+    docker exec ${container_name:?} bitcoind-info regtest
 }
