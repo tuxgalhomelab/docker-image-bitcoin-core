@@ -65,8 +65,8 @@ RUN \
         bitcoin-${BITCOIN_CORE_VERSION:?} \
         ${USER_NAME:?} \
         ${GROUP_NAME:?} \
-    && /opt/bitcoin/bin/test_bitcoin --show_progress \
-    && rm /opt/bitcoin/bin/{bitcoin-qt,test_bitcoin} \
+    && /opt/bitcoin/libexec/test_bitcoin --show_progress \
+    && rm /opt/bitcoin/bin/bitcoin-qt /opt/bitcoin/libexec/{bitcoin-gui,test_bitcoin} \
     # Set up symlink for the binary at a location accessible through $PATH. \
     && ln -sf /opt/bitcoin/bin/bitcoind /opt/bin/bitcoind \
     && ln -sf /opt/bitcoin/bin/bitcoin-cli /opt/bin/bitcoin-cli \
